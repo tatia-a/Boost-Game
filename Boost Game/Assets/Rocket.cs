@@ -47,7 +47,7 @@ public class Rocket : MonoBehaviour
         switch (collision.gameObject.tag)
         {
             case "Friendly":
-                state = State.Alive;
+                // do nothing
                 break;
             case "Finish":
                 StartSuccessSequence();
@@ -58,20 +58,27 @@ public class Rocket : MonoBehaviour
         }
     }
 
-    private void StartDeathSequence() 
-    {
-        state = State.Dying;
-        audioSource.Stop();
-        audioSource.PlayOneShot(deathSound);
-        Invoke("LoadFirstLevel", 2f);
-    }
-
     private void StartSuccessSequence()
     {
         state = State.Transceding;
+
+        mainEngineParticles.Stop();
         audioSource.Stop();
+
+        successParticles.Play();
         audioSource.PlayOneShot(successSound);
         Invoke("LoadNewLevel", 0.5f);
+    }
+    private void StartDeathSequence()
+    {
+        state = State.Dying;
+
+        mainEngineParticles.Stop();
+        audioSource.Stop();
+
+        deathParticles.Play();
+        audioSource.PlayOneShot(deathSound);
+        Invoke("LoadFirstLevel", 2f);
     }
 
     private void LoadNewLevel()
@@ -110,6 +117,7 @@ public class Rocket : MonoBehaviour
         }
         else
         {
+            mainEngineParticles.Stop();
             audioSource.Stop(); 
         }
     }
@@ -122,5 +130,7 @@ public class Rocket : MonoBehaviour
 
         if (!audioSource.isPlaying)
             audioSource.PlayOneShot(mainEngine);
+        if (!mainEngineParticles.isPlaying)
+            mainEngineParticles.Play();
     }
 }
